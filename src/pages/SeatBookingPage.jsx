@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 import Card from "../components/Card";
 
@@ -9,29 +9,31 @@ const SEAT_PRICE = 500;
 const MAX_SEATS = 6;
 
 export default function BookingPage() {
-  const API_BASE = import.meta.env.VITE_API_BASE; // ✅ from Netlify env
+    const API = import.meta.env.VITE_API_URL;
   const { routeId } = useParams();
+  const navigate = useNavigate();
 
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [bookedSeats, setBookedSeats] = useState([]);
   const [userName, setUserName] = useState("");
   const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(""); // ✅ EMAIL
   const [travelDate, setTravelDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [ticket, setTicket] = useState(null);
 
   /* ================= FETCH BOOKED SEATS ================= */
   useEffect(() => {
-    if (!travelDate || !API_BASE) return;
+    if (!travelDate) return;
 
     const formattedDate = new Date(travelDate)
       .toISOString()
       .split("T")[0];
 
-    fetch(`${API_BASE}/booking/${routeId}/seats?date=${formattedDate}`)
-      .then((res) => res.ok ? res.json() : [])
+    fetch(
+      `${API}/booking/${routeId}/seats?date=${formattedDate}`
+    )
+      .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
           setBookedSeats(data.map(Number));
@@ -40,9 +42,9 @@ export default function BookingPage() {
         }
       })
       .catch(() => setBookedSeats([]));
-  }, [routeId, travelDate, API_BASE]);
+  }, [routeId, travelDate]);
 
-  /* ================= SEAT GRID ================= */
+  /* ================= SEATS ================= */
   const seats = useMemo(
     () =>
       Array.from(
@@ -74,10 +76,8 @@ export default function BookingPage() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return setError("Invalid email");
     if (!travelDate) return setError("Select travel date");
-    if (!/^[6-9]\d{9}$/.test(phone))
-      return setError("Invalid phone");
-    if (!selectedSeats.length)
-      return setError("Select seats");
+    if (!/^[6-9]\d{9}$/.test(phone)) return setError("Invalid phone");
+    if (!selectedSeats.length) return setError("Select seats");
 
     const formattedDate = new Date(travelDate)
       .toISOString()
@@ -86,16 +86,15 @@ export default function BookingPage() {
     setLoading(true);
 
     try {
-      /* 1️⃣ BOOK SEATS */
       const res = await fetch(
-        `${API_BASE}/booking/${routeId}`,
+        `${API}/booking/${routeId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             userName,
             phone,
-            email,
+            email, // ✅ SEND EMAIL
             seats: selectedSeats,
             travelDate: formattedDate,
             amount: selectedSeats.length * SEAT_PRICE,
@@ -104,22 +103,16 @@ export default function BookingPage() {
       );
 
       const data = await res.json();
+      setLoading(false);
 
-      if (!res.ok || !data.success) {
+      if (!data.success) {
         setError(data.message || "Booking failed");
-        setLoading(false);
         return;
       }
 
-      /* 2️⃣ FETCH TICKET */
-      const ticketRes = await fetch(
-        `${API_BASE}/booking/${data.lastInsertId}`
-      );
-      const ticketData = await ticketRes.json();
-      setTicket(ticketData);
-
-      setSelectedSeats([]);
-      setLoading(false);
+      alert("Booking Successful 🎉\nTicket sent to email 📧");
+      navigate("/");
+    // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setLoading(false);
       setError("Server error");
@@ -177,6 +170,7 @@ export default function BookingPage() {
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
         />
+
         <input
           placeholder="Email"
           type="email"
@@ -184,6 +178,7 @@ export default function BookingPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+
         <input
           placeholder="Phone"
           className="w-full p-3 mb-3 border rounded"
@@ -191,37 +186,15 @@ export default function BookingPage() {
           onChange={(e) => setPhone(e.target.value)}
         />
 
-        {error && (
-          <p className="mb-3 text-red-600">{error}</p>
-        )}
+        {error && <p className="mb-3 text-red-600">{error}</p>}
 
         <button
           onClick={handleConfirm}
           disabled={loading}
-          className="w-full py-3 text-white bg-indigo-500 rounded hover:bg-indigo-700"
+          className="w-full py-3 text-white bg-indigo-400 rounded hover:bg-indigo-700"
         >
           {loading ? "Booking..." : "Confirm Booking"}
         </button>
-
-        {/* 🎫 TICKET */}
-        {ticket && (
-          <div className="p-4 mt-6 bg-white border rounded">
-            <h2 className="mb-2 text-xl font-bold">
-              🎫 Your Ticket
-            </h2>
-            <p><b>Name:</b> {ticket.user_name}</p>
-            <p><b>Email:</b> {ticket.email}</p>
-            <p><b>Phone:</b> {ticket.phone}</p>
-            <p>
-              <b>Route:</b> {ticket.departure} →{" "}
-              {ticket.destination}
-            </p>
-            <p><b>Bus:</b> {ticket.bus_name}</p>
-            <p><b>Date:</b> {ticket.travel_date}</p>
-            <p><b>Seats:</b> {ticket.seat_number}</p>
-            <p><b>Amount:</b> ₹{ticket.amount}</p>
-          </div>
-        )}
       </Card>
     </div>
   );
