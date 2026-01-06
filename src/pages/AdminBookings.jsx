@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
 export default function AdminBookings() {
-    const API = import.meta.env.VITE_API_URL;
-  const [data, setData] = useState([]);
+const API_BASE = import.meta.env.VITE_API_BASE; 
+ const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch(`${API}/api/booking/admin/all`)
+    fetch(`${API_BASE}/api/booking/admin/all`)
       .then(res => res.json())
       .then(setData);
   }, []);

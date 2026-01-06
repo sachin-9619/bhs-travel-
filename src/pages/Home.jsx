@@ -108,7 +108,7 @@ const FEATURES = [
 ];
 
 export default function HomePage() {
-    const API = import.meta.env.VITE_API_URL;
+const API_BASE = import.meta.env.VITE_API_BASE;
   const navigate = useNavigate();
 
   return (

@@ -9,7 +9,7 @@ const SEAT_PRICE = 500;
 const MAX_SEATS = 6;
 
 export default function BookingPage() {
-  const API = import.meta.env.VITE_API_URL;
+const API_BASE = import.meta.env.VITE_API_BASE;
   const { routeId } = useParams();
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ export default function BookingPage() {
 
     const formattedDate = new Date(travelDate).toISOString().split("T")[0];
 
-    fetch(`${API}/api/booking/${routeId}/seats?date=${formattedDate}`)
+    fetch(`${API_BASE}/api/booking/${routeId}/seats?date=${formattedDate}`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -77,7 +77,7 @@ export default function BookingPage() {
 
     try {
       // 1️⃣ Book seats
-      const res = await fetch(`${API}/api/booking/${routeId}`, {
+      const res = await fetch(`${API_BASE}/api/booking/${routeId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -98,7 +98,7 @@ export default function BookingPage() {
       }
 
       // 2️⃣ Fetch the latest booked ticket
-      const ticketRes = await fetch(`${API}/api/booking/${data.lastInsertId || "recent"}`);
+      const ticketRes = await fetch(`${API_BASE}/api/booking/${data.lastInsertId || "recent"}`);
       const ticketData = await ticketRes.json();
       setTicket(ticketData);
 

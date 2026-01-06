@@ -4,7 +4,7 @@ import { Button } from "../components/Button";
 import Card from "../components/Card";
 
 export default function AdminLogin() {
-    const API = import.meta.env.VITE_API_URL;
+ const API_BASE = import.meta.env.VITE_API_BASE;
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +18,7 @@ export default function AdminLogin() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API}/api/admin/login`, {
+      const res = await fetch(`${API_BASE}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),

@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaEdit, FaTrash, FaPlus, FaSync, FaEnvelope } from "react-icons/fa";
 import RouteModal from "../components/RouteModal";
-  const API = import.meta.env.VITE_API_URL;
-
-const API_BASE = `${API}/api`;
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const glassCard = "bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30";
 const actionBtn = "p-2 rounded-full transition-all duration-300 hover:scale-125 hover:shadow-xl";

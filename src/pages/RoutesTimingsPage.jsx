@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 export default function RoutesTimingsPage() {
-    const API = import.meta.env.VITE_API_URL;
+const API_BASE = import.meta.env.VITE_API_BASE;
 
   const { data: routes, isLoading } = useGetRoutesSortedByDepartureTime();
   const navigate = useNavigate();

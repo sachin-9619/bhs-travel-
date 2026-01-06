@@ -4,7 +4,7 @@ import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
 
 export default function ContactPage() {
-    const API = import.meta.env.VITE_API_URL;
+const API_BASE = import.meta.env.VITE_API_BASE;
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -50,7 +50,7 @@ export default function ContactPage() {
 
     try {
       // BACKEND SAVE
-      const res = await fetch(`${API}/api/contact`, {
+      const res = await fetch(`${API_BASE}/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
