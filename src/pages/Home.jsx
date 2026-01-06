@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Card from "../components/Card";
 import { Button } from "../components/Button";
-import puneCity from "../assets/images/pune-city.jpg";
+import puneCity from "../assets/images/Pune-city.jpg";
 import { Bus, Shield, Clock, Award, MapPin, ArrowRight, Wifi, Wallet, Headphones, Smartphone } from "lucide-react";
 
 const QUICK_INFO = [
