@@ -4,7 +4,7 @@ import { Button } from "../components/Button";
 import Card from "../components/Card";
 
 export default function AdminLogin() {
- const API_BASE = import.meta.env.VITE_API_BASE;
+  const API_BASE = import.meta.env.VITE_API_BASE;
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
