@@ -3,7 +3,7 @@ import axios from "axios";
 import { FaEdit, FaTrash, FaPlus, FaSync, FaEnvelope } from "react-icons/fa";
 import RouteModal from "../components/RouteModal";
 
-// ✅ Ensure VITE_API_BASE includes /api
+// ✅ Ensure VITE_API_BASE points to backend without trailing /api
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 const glassCard = "bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30";
@@ -23,9 +23,7 @@ export default function AdminDashboard() {
     fetchMessages();
   }, []);
 
-  /* =========================
-     FETCH DATA
-  ========================= */
+  // ========================= FETCH DATA =========================
   const fetchRoutes = async () => {
     try {
       const res = await axios.get(`${API_BASE}/api/routes`);
@@ -37,7 +35,7 @@ export default function AdminDashboard() {
 
   const fetchBookings = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/api/booking`); // <-- singular
+      const res = await axios.get(`${API_BASE}/api/booking`);
       setBookings(res.data);
     } catch (err) {
       console.error("Fetch bookings failed:", err.response?.data || err.message);
@@ -53,9 +51,7 @@ export default function AdminDashboard() {
     }
   };
 
-  /* =========================
-     DELETE ACTIONS
-  ========================= */
+  // ========================= DELETE ACTIONS =========================
   const deleteRoute = async (id) => {
     if (!window.confirm("Delete this route?")) return;
     try {
@@ -69,7 +65,7 @@ export default function AdminDashboard() {
   const deleteBooking = async (id) => {
     if (!window.confirm("Delete this booking?")) return;
     try {
-      await axios.delete(`${API_BASE}/api/booking/${id}`); // <-- singular
+      await axios.delete(`${API_BASE}/api/booking/${id}`);
       fetchBookings();
       fetchRoutes(); // update seat availability
     } catch (err) {
@@ -87,15 +83,15 @@ export default function AdminDashboard() {
     }
   };
 
+  // ========================= RENDER =========================
   return (
     <div className="min-h-screen px-4 py-12 bg-linear-to-br from-indigo-600 via-purple-600 to-pink-600">
-
       {/* HEADER */}
       <h1 className="text-4xl font-extrabold text-center text-white mb-14 drop-shadow-xl">
         🚀 Admin Dashboard
       </h1>
 
-      {/* ================= ROUTES ================= */}
+      {/* ROUTES */}
       <section className={`mb-14 p-6 ${glassCard}`}>
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <h2 className="text-2xl font-bold text-gray-800">🚌 Routes</h2>
@@ -106,7 +102,6 @@ export default function AdminDashboard() {
             <FaPlus /> Add Route
           </button>
         </div>
-
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-center">
             <thead>
@@ -143,7 +138,7 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      {/* ================= BOOKINGS ================= */}
+      {/* BOOKINGS */}
       <section className={`mb-14 p-6 ${glassCard}`}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-800">📑 Bookings</h2>
@@ -154,7 +149,6 @@ export default function AdminDashboard() {
             <FaSync /> Refresh
           </button>
         </div>
-
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-center">
             <thead>
@@ -187,7 +181,7 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      {/* ================= MESSAGES ================= */}
+      {/* MESSAGES */}
       <section className={`p-6 ${glassCard}`}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="flex items-center gap-2 text-2xl font-bold text-gray-800">
@@ -200,7 +194,6 @@ export default function AdminDashboard() {
             <FaSync /> Refresh
           </button>
         </div>
-
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-center">
             <thead>
@@ -233,7 +226,7 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      {/* ================= ROUTE MODAL ================= */}
+      {/* ROUTE MODAL */}
       {showRouteModal && (
         <RouteModal
           route={selectedRoute}
