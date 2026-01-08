@@ -9,7 +9,7 @@ const SEAT_PRICE = 500;
 const MAX_SEATS = 6;
 
 export default function BookingPage() {
-  const API = import.meta.env.VITE_API_URL;
+  const API = import.meta.env.VITE_API_BASE;
   const { routeId } = useParams();
   const navigate = useNavigate();
 
