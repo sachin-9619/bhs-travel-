@@ -9,7 +9,7 @@ const SEAT_PRICE = 500;
 const MAX_SEATS = 6;
 
 export default function BookingPage() {
-    const API = import.meta.env.VITE_API_URL;
+  const API = import.meta.env.VITE_API_URL;
   const { routeId } = useParams();
   const navigate = useNavigate();
 
@@ -17,7 +17,7 @@ export default function BookingPage() {
   const [bookedSeats, setBookedSeats] = useState([]);
   const [userName, setUserName] = useState("");
   const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState(""); // ✅ EMAIL
+  const [email, setEmail] = useState("");
   const [travelDate, setTravelDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -30,9 +30,7 @@ export default function BookingPage() {
       .toISOString()
       .split("T")[0];
 
-    fetch(
-      `${API}/booking/${routeId}/seats?date=${formattedDate}`
-    )
+    fetch(`${API}/api/booking/${routeId}/seats?date=${formattedDate}`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -42,7 +40,7 @@ export default function BookingPage() {
         }
       })
       .catch(() => setBookedSeats([]));
-  }, [routeId, travelDate]);
+  }, [API, routeId, travelDate]);
 
   /* ================= SEATS ================= */
   const seats = useMemo(
@@ -76,43 +74,37 @@ export default function BookingPage() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return setError("Invalid email");
     if (!travelDate) return setError("Select travel date");
-    if (!/^[6-9]\d{9}$/.test(phone)) return setError("Invalid phone");
-    if (!selectedSeats.length) return setError("Select seats");
-
-    const formattedDate = new Date(travelDate)
-      .toISOString()
-      .split("T")[0];
+    if (!/^[6-9]\d{9}$/.test(phone))
+      return setError("Invalid phone number");
+    if (!selectedSeats.length)
+      return setError("Select at least one seat");
 
     setLoading(true);
 
     try {
-      const res = await fetch(
-        `${API}/booking/${routeId}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userName,
-            phone,
-            email, // ✅ SEND EMAIL
-            seats: selectedSeats,
-            travelDate: formattedDate,
-            amount: selectedSeats.length * SEAT_PRICE,
-          }),
-        }
-      );
+      const res = await fetch(`${API}/api/booking`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          route_id: Number(routeId),
+          user_name: userName,
+          email,
+          phone,
+          seats: selectedSeats.length, // backend expects NUMBER
+          amount: selectedSeats.length * SEAT_PRICE,
+        }),
+      });
 
       const data = await res.json();
       setLoading(false);
 
-      if (!data.success) {
+      if (!res.ok) {
         setError(data.message || "Booking failed");
         return;
       }
 
-      alert("Booking Successful 🎉\nTicket sent to email 📧");
+      alert("🎉 Booking Successful!");
       navigate("/");
-    // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setLoading(false);
       setError("Server error");
@@ -129,7 +121,7 @@ export default function BookingPage() {
         {/* DATE */}
         <input
           type="date"
-          className="w-full p-3 mb-3 border rounded"
+          className="w-full p-3 mb-4 border rounded"
           value={travelDate}
           min={new Date().toISOString().split("T")[0]}
           onChange={(e) => setTravelDate(e.target.value)}
@@ -164,6 +156,7 @@ export default function BookingPage() {
           ))}
         </div>
 
+        {/* FORM */}
         <input
           placeholder="Name"
           className="w-full p-3 mb-3 border rounded"
@@ -191,7 +184,7 @@ export default function BookingPage() {
         <button
           onClick={handleConfirm}
           disabled={loading}
-          className="w-full py-3 text-white bg-indigo-400 rounded hover:bg-indigo-700"
+          className="w-full py-3 text-white bg-indigo-500 rounded hover:bg-indigo-700 disabled:opacity-60"
         >
           {loading ? "Booking..." : "Confirm Booking"}
         </button>
