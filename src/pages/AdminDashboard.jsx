@@ -3,7 +3,7 @@ import axios from "axios";
 import { FaEdit, FaTrash, FaPlus, FaSync, FaEnvelope } from "react-icons/fa";
 import RouteModal from "../components/RouteModal";
 
-// ✅ Ensure VITE_API_BASE points to backend without trailing /api
+// ✅ Backend base URL without trailing /api
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 const glassCard = "bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30";
@@ -27,6 +27,7 @@ export default function AdminDashboard() {
   const fetchRoutes = async () => {
     try {
       const res = await axios.get(`${API_BASE}/api/routes`);
+      // Backend se jo aata hai wo already: {id, bus_name, departure, destination, available_seats, price}
       setRoutes(res.data);
     } catch (err) {
       console.error("Fetch routes failed:", err.response?.data || err.message);
@@ -102,6 +103,7 @@ export default function AdminDashboard() {
             <FaPlus /> Add Route
           </button>
         </div>
+
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-center">
             <thead>
@@ -112,27 +114,35 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {routes.map(r => (
-                <tr key={r.id} className="transition hover:bg-white/60">
-                  <td className="p-3 font-semibold">{r.bus_name}</td>
-                  <td className="p-3">{r.departure}</td>
-                  <td className="p-3">{r.destination}</td>
-                  <td className="p-3">{r.available_seats}</td>
-                  <td className="p-3 font-bold">₹{r.price}</td>
-                  <td className="p-3">
-                    <div className="flex justify-center gap-4">
-                      <button
-                        onClick={() => { setSelectedRoute(r); setShowRouteModal(true); }}
-                        className={`${actionBtn} bg-yellow-400`}
-                      ><FaEdit /></button>
-                      <button
-                        onClick={() => deleteRoute(r.id)}
-                        className={`${actionBtn} bg-red-500 text-white`}
-                      ><FaTrash /></button>
-                    </div>
+              {routes.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-4 text-gray-500">
+                    No routes available
                   </td>
                 </tr>
-              ))}
+              ) : (
+                routes.map(r => (
+                  <tr key={r.id} className="transition hover:bg-white/60">
+                    <td className="p-3 font-semibold">{r.bus_name}</td>
+                    <td className="p-3">{r.departure}</td>
+                    <td className="p-3">{r.destination}</td>
+                    <td className="p-3">{r.available_seats}</td>
+                    <td className="p-3 font-bold">₹{r.price}</td>
+                    <td className="p-3">
+                      <div className="flex justify-center gap-4">
+                        <button
+                          onClick={() => { setSelectedRoute(r); setShowRouteModal(true); }}
+                          className={`${actionBtn} bg-yellow-400`}
+                        ><FaEdit /></button>
+                        <button
+                          onClick={() => deleteRoute(r.id)}
+                          className={`${actionBtn} bg-red-500 text-white`}
+                        ><FaTrash /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
