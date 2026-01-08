@@ -22,7 +22,7 @@ export default function BookingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  /* ================= FETCH BOOKED SEATS ================= */
+  // ================= FETCH BOOKED SEATS =================
   useEffect(() => {
     if (!travelDate) return;
 
@@ -32,23 +32,13 @@ export default function BookingPage() {
 
     fetch(`${API}/api/booking/${routeId}/seats?date=${formattedDate}`)
       .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setBookedSeats(data.map(Number));
-        } else {
-          setBookedSeats([]);
-        }
-      })
+      .then((data) => setBookedSeats(Array.isArray(data) ? data.map(Number) : []))
       .catch(() => setBookedSeats([]));
   }, [API, routeId, travelDate]);
 
-  /* ================= SEATS ================= */
+  // ================= SEATS =================
   const seats = useMemo(
-    () =>
-      Array.from(
-        { length: SEAT_ROWS * SEATS_PER_ROW },
-        (_, i) => i + 1
-      ),
+    () => Array.from({ length: SEAT_ROWS * SEATS_PER_ROW }, (_, i) => i + 1),
     []
   );
 
@@ -65,7 +55,7 @@ export default function BookingPage() {
     });
   };
 
-  /* ================= CONFIRM BOOKING ================= */
+  // ================= CONFIRM BOOKING =================
   const handleConfirm = async () => {
     setError("");
 
@@ -82,15 +72,15 @@ export default function BookingPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API}/api/booking`, {
+      const res = await fetch(`${API}/api/booking/${routeId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          route_id: Number(routeId),
-          user_name: userName,
-          email,
+          seats: selectedSeats,           // ✅ Array of seat numbers
+          userName,                       // ✅ camelCase
           phone,
-          seats: selectedSeats.length, // backend expects NUMBER
+          email,
+          travelDate,
           amount: selectedSeats.length * SEAT_PRICE,
         }),
       });
@@ -114,9 +104,7 @@ export default function BookingPage() {
   return (
     <div className="min-h-screen py-16 bg-gray-100">
       <Card className="max-w-3xl p-8 mx-auto">
-        <h1 className="mb-4 text-2xl font-bold text-center">
-          Book Seats
-        </h1>
+        <h1 className="mb-4 text-2xl font-bold text-center">Book Seats</h1>
 
         {/* DATE */}
         <input
@@ -132,10 +120,7 @@ export default function BookingPage() {
           {Array.from({ length: SEAT_ROWS }).map((_, row) => (
             <div key={row} className="flex justify-center gap-3">
               {seats
-                .slice(
-                  row * SEATS_PER_ROW,
-                  row * SEATS_PER_ROW + SEATS_PER_ROW
-                )
+                .slice(row * SEATS_PER_ROW, row * SEATS_PER_ROW + SEATS_PER_ROW)
                 .map((s) => (
                   <div
                     key={s}
@@ -163,7 +148,6 @@ export default function BookingPage() {
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
         />
-
         <input
           placeholder="Email"
           type="email"
@@ -171,7 +155,6 @@ export default function BookingPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-
         <input
           placeholder="Phone"
           className="w-full p-3 mb-3 border rounded"
