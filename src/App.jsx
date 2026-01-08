@@ -13,13 +13,13 @@ import RoutesTimingsPage from "./pages/RoutesTimingsPage";
 import SeatBookingPage from "./pages/SeatBookingPage";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
-
+import usePWAInstall from "./usePWAInstall";
 /* =========================
    INNER APP (for useNavigate)
 ========================= */
 function AppContent() {
   const navigate = useNavigate();
-
+  usePWAInstall();
   // 🔥 AUTO LOGOUT ON RELOAD
   useEffect(() => {
     const navType = performance.getEntriesByType("navigation")[0]?.type;

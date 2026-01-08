@@ -1,24 +1,35 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { VitePWA } from 'vite-plugin-pwa'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: "autoUpdate",
+      includeAssets: ["favicon.svg", "icon-192.png", "icon-512.png"],
       manifest: {
-        name: 'BHS Travels',
-        short_name: 'BHS',
-        start_url: '/',
-        display: 'standalone',
-        theme_color: '#4f46e5',
-        background_color: '#ffffff',
+        name: "BHS Travels",
+        short_name: "BHS",
+        description: "Bus Seat Booking App",
+        start_url: "/",
+        display: "standalone",
+        background_color: "#ffffff",
+        theme_color: "#4f46e5",
+        orientation: "portrait",
         icons: [
-          { src: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icon-512x512.png', sizes: '512x512', type: 'image/png' }
-        ]
-      }
-    })
-  ]
-})
+          {
+            src: "icon-192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+        ],
+      },
+    }),
+  ],
+});
