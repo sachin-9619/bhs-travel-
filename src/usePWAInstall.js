@@ -1,14 +1,13 @@
-// src/usePWAInstall.js
 import { useEffect } from "react";
 
 export default function usePWAInstall() {
   useEffect(() => {
     let deferredPrompt;
 
-    const handlerBeforeInstallPrompt = (e) => {
+    const handler = (e) => {
       e.preventDefault();
-      deferredPrompt = e; // save the event
-      // Show your custom banner/button here
+      deferredPrompt = e;
+
       const banner = document.createElement("div");
       banner.id = "pwa-banner";
       banner.style = `
@@ -40,21 +39,14 @@ export default function usePWAInstall() {
       document.getElementById("installBtn").onclick = async () => {
         if (!deferredPrompt) return;
         deferredPrompt.prompt();
-        const choiceResult = await deferredPrompt.userChoice;
-        if (choiceResult.outcome === "accepted") {
-          console.log("👍 User accepted PWA install");
-        } else {
-          console.log("👎 User dismissed PWA install");
-        }
+        const choice = await deferredPrompt.userChoice;
         deferredPrompt = null;
         banner.remove();
+        console.log("PWA install:", choice.outcome);
       };
     };
 
-    window.addEventListener("beforeinstallprompt", handlerBeforeInstallPrompt);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handlerBeforeInstallPrompt);
-    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
 }
