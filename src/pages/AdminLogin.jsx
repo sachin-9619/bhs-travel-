@@ -63,7 +63,7 @@ export default function AdminLogin() {
         <Button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full bg-gradient-to-r from-indigo-600 to-pink-500"
+          className="w-full bg-linear-to-r from-indigo-600 to-pink-500"
         >
           {loading ? "Logging in..." : "Login"}
         </Button>
