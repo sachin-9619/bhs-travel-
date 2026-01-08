@@ -26,17 +26,26 @@ export default function BookingPage() {
   useEffect(() => {
     if (!travelDate) return;
 
-    const formattedDate = new Date(travelDate)
-      .toISOString()
-      .split("T")[0];
+    const formattedDate = new Date(travelDate).toISOString().split("T")[0];
 
-    fetch(`${API}/api/booking/${routeId}/seats?date=${formattedDate}`)
-      .then((res) => res.json())
-      .then((data) => setBookedSeats(Array.isArray(data) ? data.map(Number) : []))
-      .catch(() => setBookedSeats([]));
+    const fetchBookedSeats = async () => {
+      try {
+        const res = await fetch(
+          `${API}/api/booking/${routeId}/seats?date=${formattedDate}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch booked seats");
+        const data = await res.json();
+        setBookedSeats(Array.isArray(data.seats) ? data.seats.map(Number) : []);
+      } catch (err) {
+        console.error(err);
+        setBookedSeats([]);
+      }
+    };
+
+    fetchBookedSeats();
   }, [API, routeId, travelDate]);
 
-  // ================= SEATS =================
+  // ================= SEATS ARRAY =================
   const seats = useMemo(
     () => Array.from({ length: SEAT_ROWS * SEATS_PER_ROW }, (_, i) => i + 1),
     []
@@ -66,8 +75,7 @@ export default function BookingPage() {
     if (!travelDate) return setError("Select travel date");
     if (!/^[6-9]\d{9}$/.test(phone))
       return setError("Invalid phone number");
-    if (!selectedSeats.length)
-      return setError("Select at least one seat");
+    if (!selectedSeats.length) return setError("Select at least one seat");
 
     setLoading(true);
 
@@ -76,8 +84,8 @@ export default function BookingPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          seats: selectedSeats,           // ✅ Array of seat numbers
-          userName,                       // ✅ camelCase
+          seats: selectedSeats,
+          userName,
           phone,
           email,
           travelDate,
@@ -94,10 +102,12 @@ export default function BookingPage() {
       }
 
       alert("🎉 Booking Successful!");
+      setSelectedSeats([]);
       navigate("/");
     } catch (err) {
+      console.error(err);
       setLoading(false);
-      setError("Server error");
+      setError("Server error, try again later");
     }
   };
 
@@ -106,7 +116,7 @@ export default function BookingPage() {
       <Card className="max-w-3xl p-8 mx-auto">
         <h1 className="mb-4 text-2xl font-bold text-center">Book Seats</h1>
 
-        {/* DATE */}
+        {/* DATE PICKER */}
         <input
           type="date"
           className="w-full p-3 mb-4 border rounded"
@@ -115,7 +125,7 @@ export default function BookingPage() {
           onChange={(e) => setTravelDate(e.target.value)}
         />
 
-        {/* SEATS */}
+        {/* SEATS GRID */}
         <div className="mb-6 space-y-3">
           {Array.from({ length: SEAT_ROWS }).map((_, row) => (
             <div key={row} className="flex justify-center gap-3">
@@ -141,7 +151,7 @@ export default function BookingPage() {
           ))}
         </div>
 
-        {/* FORM */}
+        {/* USER FORM */}
         <input
           placeholder="Name"
           className="w-full p-3 mb-3 border rounded"
