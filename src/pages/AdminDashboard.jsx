@@ -28,7 +28,7 @@ export default function AdminDashboard() {
   ========================= */
   const fetchRoutes = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/routes`);
+      const res = await axios.get(`${API_BASE}/api/routes`);
       setRoutes(res.data);
     } catch (err) {
       console.error("Fetch routes failed:", err.response?.data || err.message);
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
 
   const fetchBookings = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/booking`); // <-- singular
+      const res = await axios.get(`${API_BASE}/api/booking`); // <-- singular
       setBookings(res.data);
     } catch (err) {
       console.error("Fetch bookings failed:", err.response?.data || err.message);
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
 
   const fetchMessages = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/contact`);
+      const res = await axios.get(`${API_BASE}/api/contact`);
       setMessages(res.data);
     } catch (err) {
       console.error("Fetch messages failed:", err.response?.data || err.message);
@@ -59,7 +59,7 @@ export default function AdminDashboard() {
   const deleteRoute = async (id) => {
     if (!window.confirm("Delete this route?")) return;
     try {
-      await axios.delete(`${API_BASE}/routes/${id}`);
+      await axios.delete(`${API_BASE}/api/routes/${id}`);
       fetchRoutes();
     } catch (err) {
       console.error("Delete route failed:", err.response?.data || err.message);
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
   const deleteBooking = async (id) => {
     if (!window.confirm("Delete this booking?")) return;
     try {
-      await axios.delete(`${API_BASE}/booking/${id}`); // <-- singular
+      await axios.delete(`${API_BASE}/api/booking/${id}`); // <-- singular
       fetchBookings();
       fetchRoutes(); // update seat availability
     } catch (err) {
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
   const deleteMessage = async (id) => {
     if (!window.confirm("Delete this message?")) return;
     try {
-      await axios.delete(`${API_BASE}/contact/${id}`);
+      await axios.delete(`${API_BASE}/api/contact/${id}`);
       fetchMessages();
     } catch (err) {
       console.error("Delete message failed:", err.response?.data || err.message);
