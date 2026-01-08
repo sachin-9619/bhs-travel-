@@ -11,34 +11,37 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!username || !password) {
-      alert("Please enter username and password");
-      return;
-    }
+  if (!username || !password) {
+    alert("Please enter username and password");
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_BASE}/api/admin/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-      const data = await res.json();
+  setLoading(true);
+  try {
+    const res = await fetch(`${API_BASE}/api/admin/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
 
-      if (data.success) {
-        localStorage.setItem("adminToken", data.token);
-        alert("Login successful!");
-        navigate("/admin-dashboard");
-      } else {
-        alert(data.message || "Invalid credentials");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
-    } finally {
-      setLoading(false);
+    const data = await res.json();
+
+    // ✅ SUCCESS CONDITION FIX
+    if (res.ok && data.token) {
+      localStorage.setItem("adminToken", data.token);
+      alert("Login successful!");
+      navigate("/admin-dashboard");
+    } else {
+      alert(data.message || "Invalid credentials");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-indigo-50">
