@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaEdit, FaTrash, FaPlus, FaSync, FaEnvelope } from "react-icons/fa";
 import RouteModal from "../components/RouteModal";
+
+// ✅ Ensure VITE_API_BASE includes /api
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 const glassCard = "bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30";
@@ -29,16 +31,16 @@ export default function AdminDashboard() {
       const res = await axios.get(`${API_BASE}/routes`);
       setRoutes(res.data);
     } catch (err) {
-      console.error("Fetch routes failed:", err);
+      console.error("Fetch routes failed:", err.response?.data || err.message);
     }
   };
 
   const fetchBookings = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/bookings`);
+      const res = await axios.get(`${API_BASE}/booking`); // <-- singular
       setBookings(res.data);
     } catch (err) {
-      console.error("Fetch bookings failed:", err);
+      console.error("Fetch bookings failed:", err.response?.data || err.message);
     }
   };
 
@@ -47,7 +49,7 @@ export default function AdminDashboard() {
       const res = await axios.get(`${API_BASE}/contact`);
       setMessages(res.data);
     } catch (err) {
-      console.error("Fetch messages failed:", err);
+      console.error("Fetch messages failed:", err.response?.data || err.message);
     }
   };
 
@@ -60,18 +62,18 @@ export default function AdminDashboard() {
       await axios.delete(`${API_BASE}/routes/${id}`);
       fetchRoutes();
     } catch (err) {
-      console.error("Delete route failed:", err);
+      console.error("Delete route failed:", err.response?.data || err.message);
     }
   };
 
   const deleteBooking = async (id) => {
     if (!window.confirm("Delete this booking?")) return;
     try {
-      await axios.delete(`${API_BASE}/bookings/${id}`);
+      await axios.delete(`${API_BASE}/booking/${id}`); // <-- singular
       fetchBookings();
       fetchRoutes(); // update seat availability
     } catch (err) {
-      console.error("Delete booking failed:", err);
+      console.error("Delete booking failed:", err.response?.data || err.message);
     }
   };
 
@@ -81,7 +83,7 @@ export default function AdminDashboard() {
       await axios.delete(`${API_BASE}/contact/${id}`);
       fetchMessages();
     } catch (err) {
-      console.error("Delete message failed:", err);
+      console.error("Delete message failed:", err.response?.data || err.message);
     }
   };
 
