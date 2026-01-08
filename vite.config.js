@@ -6,27 +6,25 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'autoUpdate',   // ✅ SW auto-register
       manifest: {
-        name: 'BHS Travel App',
+        name: 'BHS Travels',
         short_name: 'BHS',
+        description: 'Bus Seat Booking App',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',
-        theme_color: '#0f172a',
+        theme_color: '#4f46e5',
+        orientation: 'portrait',
         icons: [
-          {
-            src: '/icon-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: '/icon-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-        ],
+          { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/icon-512.png', sizes: '512x512', type: 'image/png' }
+        ]
       },
-    }),
-  ],
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,png,svg,ico}']  // ✅ Cache all assets
+      },
+      devOptions: { enabled: true }
+    })
+  ]
 })
