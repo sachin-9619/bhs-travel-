@@ -6,13 +6,27 @@ import "./App.css";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// React Query client
 const queryClient = new QueryClient();
 
-// Service Worker
+// ================= PWA INSTALL PROMPT =================
+let deferredPrompt = null;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault(); // stop auto popup
+  deferredPrompt = e;
+  window.deferredPrompt = e; // make global
+  console.log("📲 PWA install prompt ready");
+});
+
+// ================= SERVICE WORKER =================
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js");
+  window.addEventListener("load", async () => {
+    try {
+      const reg = await navigator.serviceWorker.register("/sw.js");
+      console.log("✅ Service Worker registered", reg);
+    } catch (err) {
+      console.error("❌ Service Worker registration failed", err);
+    }
   });
 }
 
