@@ -18,15 +18,15 @@ export default function BookingPage() {
   const [userName, setUserName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [travelDate, setTravelDate] = useState(new Date().toISOString().split("T")[0]); // Default today
+  const [travelDate, setTravelDate] = useState(""); // empty initially
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   // ================= FETCH BOOKED SEATS =================
   useEffect(() => {
-    if (!travelDate) return;
+    if (!travelDate) return; // fetch only after date selected
 
-    const formattedDate = new Date(travelDate).toISOString().split("T")[0];
+    const formattedDate = new Date(travelDate).toISOString().split("T")[0]; // yyyy-MM-dd
 
     const fetchBookedSeats = async () => {
       try {
@@ -35,7 +35,6 @@ export default function BookingPage() {
         );
         if (!res.ok) throw new Error("Failed to fetch booked seats");
         const data = await res.json();
-        // Ensure all seats are numbers
         setBookedSeats(Array.isArray(data.seats) ? data.seats.map(Number) : []);
       } catch (err) {
         console.error(err);
@@ -140,11 +139,12 @@ export default function BookingPage() {
                       key={s}
                       onClick={() => toggleSeat(s)}
                       className={`w-10 h-10 flex items-center justify-center rounded font-bold
-                        ${isBooked
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : isSelected
-                          ? "bg-indigo-600 text-white cursor-pointer"
-                          : "bg-indigo-300 hover:bg-indigo-400 cursor-pointer"
+                        ${
+                          isBooked
+                            ? "bg-red-500 cursor-not-allowed text-white"
+                            : isSelected
+                            ? "bg-indigo-600 text-white cursor-pointer"
+                            : "bg-indigo-300 hover:bg-indigo-400 cursor-pointer"
                         }`}
                     >
                       {isBooked ? <Check className="text-white" /> : s}
