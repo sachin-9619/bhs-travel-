@@ -18,7 +18,7 @@ export default function BookingPage() {
   const [userName, setUserName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [travelDate, setTravelDate] = useState("");
+  const [travelDate, setTravelDate] = useState(new Date().toISOString().split("T")[0]); // Default today
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -35,6 +35,7 @@ export default function BookingPage() {
         );
         if (!res.ok) throw new Error("Failed to fetch booked seats");
         const data = await res.json();
+        // Ensure all seats are numbers
         setBookedSeats(Array.isArray(data.seats) ? data.seats.map(Number) : []);
       } catch (err) {
         console.error(err);
@@ -131,22 +132,25 @@ export default function BookingPage() {
             <div key={row} className="flex justify-center gap-3">
               {seats
                 .slice(row * SEATS_PER_ROW, row * SEATS_PER_ROW + SEATS_PER_ROW)
-                .map((s) => (
-                  <div
-                    key={s}
-                    onClick={() => toggleSeat(s)}
-                    className={`w-10 h-10 flex items-center justify-center rounded cursor-pointer font-bold
-                      ${
-                        bookedSeats.includes(s)
+                .map((s) => {
+                  const isBooked = bookedSeats.includes(s);
+                  const isSelected = selectedSeats.includes(s);
+                  return (
+                    <div
+                      key={s}
+                      onClick={() => toggleSeat(s)}
+                      className={`w-10 h-10 flex items-center justify-center rounded font-bold
+                        ${isBooked
                           ? "bg-gray-400 cursor-not-allowed"
-                          : selectedSeats.includes(s)
-                          ? "bg-indigo-600 text-white"
-                          : "bg-indigo-300 hover:bg-indigo-400"
-                      }`}
-                  >
-                    {bookedSeats.includes(s) ? <Check /> : s}
-                  </div>
-                ))}
+                          : isSelected
+                          ? "bg-indigo-600 text-white cursor-pointer"
+                          : "bg-indigo-300 hover:bg-indigo-400 cursor-pointer"
+                        }`}
+                    >
+                      {isBooked ? <Check className="text-white" /> : s}
+                    </div>
+                  );
+                })}
             </div>
           ))}
         </div>
